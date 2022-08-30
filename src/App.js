@@ -3,6 +3,7 @@ import {Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout';
 import Notes from './components/notelist/Notes';
 import AddNotes from './components/notelist/AddNotes';
+import EditNote from './components/notelist/EditNote';
 
 const initialState = [];
 
@@ -13,6 +14,10 @@ const reducer = (state,action)=>{
   {
     case 'ADD_NOTE':
       return [...state,action.value];
+    case 'DELETE_NOTE':
+      return [...state.slice(0,action.value.index),...state.slice(action.value.index+1)];
+    case 'EDIT_NOTE':
+      return [...state.slice(0,action.value.index),{text:action.value.text,date:action.value.date},...state.slice(action.value.index + 1)]
     default:
       return state;
   }
@@ -20,7 +25,6 @@ const reducer = (state,action)=>{
 
 function App() {
   const [notes,dispatch] = useReducer(reducer,initialState);
-  console.log(notes)
   return (
     <NoteContext.Provider value = {{noteState:notes,noteDispatch:dispatch}}>
          <div className="">
@@ -28,7 +32,9 @@ function App() {
             <Route path = "/" element = {<Layout/>}>
               <Route index element = {<Notes/>}/>
               <Route path = "/add" element = {<AddNotes/>}/>
+              <Route path = "/edit/:id" element = {<EditNote/>}/>
             </Route>
+            <Route path = "*" element = {<h1>Error 404 </h1>}/>
         </Routes>
     </div>
     </NoteContext.Provider>

@@ -1,18 +1,18 @@
 import React, { useState ,useContext } from 'react'
-import { Link, useNavigate} from 'react-router-dom';
+import { Link, useNavigate , useParams} from 'react-router-dom';
 import { NoteContext } from '../../App';
 
 
-const instruction = '# Title , *italic* ,**bold**';
+
 
 export default function AddNotes() {
+  const params = useParams();
   const navigate = useNavigate();
   const noteContext = useContext(NoteContext);
   const [input,setInput] = useState('');
   const [error,setError] = useState(null)
 
-  console.log(input);
- 
+console.log(noteContext.noteState[params.id].text)
   function handleChange(e)
   {
     setInput(e.target.value);
@@ -28,14 +28,14 @@ export default function AddNotes() {
 
     if(input === '')
     {
-        return setError('Write Something!');
+        return setError('No changes!');
     }
     const submitDate = getDate();
 
-        noteContext.noteDispatch({type:'ADD_NOTE',value:{
+        noteContext.noteDispatch({type:'EDIT_NOTE',value:{
             text:input,
             date:submitDate,
-            
+            index:params.id
         }
     })
 
@@ -44,7 +44,7 @@ export default function AddNotes() {
 
   function getDate()
   {
-    const days = ['Sun','Mon','Tue','Wed','Thur','Fri','Sat'];
+        const days = ['Sun','Mon','Tue','Wed','Thur','Fri','Sat'];
         const months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec']
         const d = new Date();
         const date = d.getDate();
@@ -59,14 +59,15 @@ export default function AddNotes() {
     
     <form onSubmit={handleSubmit} className='flex flex-col justify-start items-center grow '>
         {error && <p className='text-xl font-semibold text-red-500'>{error}</p>}
-        <p className='text-2xl text-gray-600 my-2 '>Add notes</p>
+        <p className='text-2xl text-gray-600 my-2 '>Edit Note</p>
     <textarea 
-     placeholder= {instruction}
      onChange={handleChange}
+     defaultValue = {noteContext.noteState[params.id].text}
      className='border border-gray-600 w-11/12 h-2/3 my-2  px-2 py-2 text-2xl'>
+       
     </textarea>
     <Link to = "/" >
-    <p className='z-10 absolute bottom-5 left-5  text-6xl text-gray-200 rounded-full w-20 h-20 flex justify-center items-center bg-yellow-500'>
+    <p className='z-10 absolute bottom-5 left-5 text-6xl text-gray-200 rounded-full w-20 h-20 flex justify-center items-center bg-yellow-500'>
     ←
      </p>
     </Link>
